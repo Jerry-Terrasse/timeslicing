@@ -1,0 +1,5 @@
+static/mdui
+static/jq
+
+__pycache__
+temp/
