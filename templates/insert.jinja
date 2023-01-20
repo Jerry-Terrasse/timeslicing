@@ -1,0 +1,21 @@
+{% include 'header.jinja' %}
+
+<div class='mdui-container' style=''>
+    <div id="date_input" class="mdui-textfield mdui-textfield-floating-label">
+        <label class="mdui-textfield-label">日期</label>
+        <input class="mdui-textfield-input" type="text" />
+    </div>
+    <div id="log_input" class="mdui-textfield mdui-textfield-floating-label">
+        <label class="mdui-textfield-label">日志</label>
+        <textarea class="mdui-textfield-input" type="text"></textarea>
+    </div>
+    <button id="parse_btn" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent"
+        onclick="parse();">解析</button>
+
+    <button id="parse_btn" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-green" onclick="insert();">记录</button>
+
+    <div id="log_table" class="mdui-hidden mdui-table-fluid">
+    </div>
+</div>
+
+{% include 'footer.jinja' %}

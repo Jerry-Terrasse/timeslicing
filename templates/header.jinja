@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Time Slicing - {{ title }}</title>
+    <!-- MDUI CSS -->
+    <link rel="stylesheet" href="/static/mdui/css/mdui.min.css"
+        integrity="sha384-cLRrMq39HOZdvE0j6yBojO4+1PrHfB7a9l5qLcmRm/fiWXYY+CndJPmyu5FV/9Tw" crossorigin="anonymous" />
+    <!-- MDUI JavaScript -->
+    <script src="/static/mdui/js/mdui.min.js"
+        integrity="sha384-gCMZcshYKOGRX9r6wbDrvF+TcCCswSHFucUzUPwka+Gr+uHgjlYvkABr95TCOz3A"
+        crossorigin="anonymous"></script>
+    <script src="/static/jq/jquery-3.6.0.min.js"></script>
+    <script src="/static/timeslicing.js"></script>
+</head>
+
+<body
+    class='mdui-theme-primary-indigo mdui-theme-accent-pink mdui-drawer-body-left mdui-theme-layout-auto mdui-appbar-with-toolbar'>
+    <header>
+        <div class="mdui-appbar mdui-appbar-fixed">
+            <div class="mdui-toolbar mdui-color-theme">
+                <a class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#drawer'}">
+                    <i class="mdui-icon material-icons">menu</i>
+                </a>
+                <a class="mdui-typo-headline">{{title}}</a>
+                <div class="mdui-toolbar-spacer"></div>
+            </div>
+        </div>
+    </header>
+    <div id="drawer" class='mdui-drawer'>
+        <div class='mdui-list'>
+            <a href='/' class='mdui-list-item mdui-ripple'>Home</a>
+            <a href='/insert' class='mdui-list-item mdui-ripple'>Insert</a>
+            <a href='/inspect' class='mdui-list-item mdui-ripple'>Inspect</a>
+        </div>
+    </div>
