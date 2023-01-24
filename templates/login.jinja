@@ -1,0 +1,31 @@
+{% include 'header.jinja' %}
+
+<div class='mdui-container mdui-valign' style='height:80vh;'>
+    <form method="POST">
+        {{ form.csrf_token }}
+
+        <div class="mdui-textfield mdui-textfield-floating-label">
+            <label class="mdui-textfield-label">User name</label>
+            <input class="mdui-textfield-input" type="text" name="username" />
+        </div>
+
+        <div class="mdui-textfield mdui-textfield-floating-label">
+            <label class="mdui-textfield-label">Password</label>
+            <input class="mdui-textfield-input" type="password" name="password" />
+        </div>
+
+        <input type="submit" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent" value="Login" />
+    </form>
+
+<script>
+{% if(error_msg) %}
+    mdui.snackbar({
+        message: '{{ error_msg }}',
+        position: 'right-top'
+    });
+{% endif %}
+</script>
+
+</div>
+
+{% include 'footer.jinja' %}
