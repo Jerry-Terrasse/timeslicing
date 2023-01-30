@@ -11,6 +11,7 @@ import sys
 import json
 from datetime import datetime
 import hashlib
+from loguru import logger
 from typing import Union
 
 db_pass = os.getenv('PASS')
@@ -116,7 +117,7 @@ def login():
 		username = form.username.data
 		password = form.password.data
 		user = User.get_by_name(username)
-		print(user)
+		logger.debug(user)
 		if user:
 			if user.verify(password):
 				login_user(user)
@@ -125,7 +126,7 @@ def login():
 				error_msg = '密码错误'
 		else:
 			error_msg = '用户不存在'
-	return render_template('login.jinja', title='登录', form=form, error_msg=error_msg, user=current_user)
+	return render_template('login.jinja', title='Login', user=current_user, form=form, error_msg=error_msg)
 
 @app.route('/logout')
 @login_required
@@ -136,7 +137,7 @@ def logout():
 @app.route('/insert')
 @login_required
 def insert():
-	return render_template('insert.jinja', user=current_user)
+	return render_template('insert.jinja', title='Insert', user=current_user)
 
 @app.post('/insert_post')
 @login_required
@@ -144,7 +145,7 @@ def submit():
 	try:
 		logs_str = request.form['logs']
 		logs: list[list] = json.loads(logs_str)
-		slices = [Slice(time=datetime.fromtimestamp(ts/1000), affair=affair) for ts, affair in logs]
+		slices = [Slice(user_id=current_user.user_id, time=datetime.fromtimestamp(ts/1000), affair=affair) for ts, affair in logs]
 		db.session.add_all(slices)
 		db.session.commit()
 		return {
@@ -152,6 +153,7 @@ def submit():
 			'msg': '插入成功'
 		}
 	except Exception as e:
+		logger.warning(e)
 		return {
 			'status': 'error',
 			'msg': str(e)
@@ -160,19 +162,31 @@ def submit():
 @app.route('/inspect')
 @login_required
 def inspect():
-	return render_template('inspect.jinja', user=current_user)
+	return render_template('inspect.jinja', title='Inspect', user=current_user)
+
+@app.route('/statistic')
+@login_required
+def statistic():
+	return render_template('statistic.jinja', title='statistic', user=current_user)
 
 @app.get('/query')
 @login_required
 def query():
 	try:
-		slices: list[Slice] = Slice.query.all()
+		slices: sa.engine.ScalarResult = db.session.execute(
+			sa.select(Slice)
+			.where(Slice.user_id == current_user.user_id)
+			.order_by(Slice.time)
+		).scalars()
+		logger.debug(slices)
+		# slices: list[Slice] = Slice.query.all()
 		return {
 			'status': 'success',
 			'msg': '查询成功',
 			'logs': [slice.simplify() for slice in slices]
 		}
 	except Exception as e:
+		logger.warning(e)
 		return {
 			'status': 'error',
 			'msg': str(e)

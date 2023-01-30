@@ -65,7 +65,7 @@ function parse() {
       return;
     }
   }
-  var table_str = make_table(logs);
+  var table_str = make_affairs_table(logs, "<table class='mdui-table'><thead><tr><th>#</th><th>Time</th><th>Affair</th></tr></thead><tbody></tbody>");
   $("#log_table").html(table_str);
   $("#log_table").removeClass("mdui-hidden");
   mdui.snackbar({
@@ -75,14 +75,12 @@ function parse() {
   mdui.mutation();
 }
 
-function make_table(logs) {
+function make_affairs_table(logs, header) {
   if (logs.length == 0) {
     return "<table class='mdui-table'><thead><tr><th>无内容</th></tr></thead><tbody></tbody></table>";
   }
   var with_update_time = logs[0].length == 3;
-  var table_str = `<table class='mdui-table'><thead><tr><th>#</th><th>Time</th><th>Affair</th>${
-    with_update_time ? "<th>Update time</th>" : ""
-  }</tr></thead><tbody>`;
+  var table_str = header;
   for (let i = 0; i < logs.length; i++) {
     table_str +=
       "<tr><td>" +
@@ -152,15 +150,76 @@ function query()
 				message: "查询成功",
 				position: "right-top",
 			});
-			$("#log_table").html(make_table(data.logs));
+			$("#log_table").html(make_affairs_table(data.logs, "<table class='mdui-table'><thead><tr><th>#</th><th>Time</th><th>Affair</th><th>Update time</th></tr></thead><tbody>"));
 			$("#log_table").removeClass("mdui-hidden");
 			mdui.mutation();
 		} else {
 			mdui.snackbar({
-				message: "查询失败\nstatus: " + status + "\nmsg: " + data.msg,
+				message: "查询失败\nstatus: " + data.status + "\nmsg: " + data.msg,
 				position: "right-top",
 			});
 			$("#log_table").addClass("mdui-hidden");
+		}
+	});
+}
+
+function make_table(headers, rows, with_serial_number)
+{
+  if(with_serial_number) {
+    headers.splice(0, 0, "#");
+  }
+  var table_str = "<table class='mdui-table'><thead><tr>";
+  for (let i = 0; i < headers.length; i++) {
+    table_str += "<th>" + headers[i] + "</th>";
+  }
+  table_str += "</tr></thead><tbody>";
+  for (let i = 0; i < rows.length; i++) {
+    table_str += "<tr>";
+    if(with_serial_number) {
+      table_str += "<td>" + (i + 1) + "</td>";
+    }
+    for (let j = 0; j < rows[i].length; j++) {
+      table_str += "<td>" + rows[i][j] + "</td>";
+    }
+    table_str += "</tr>";
+  }
+  table_str += "</tbody></table>";
+  return table_str;
+}
+
+function statistic()
+{
+	$.get("/query", function(data, status){
+		if (status == "success" && data.status == "success") {
+			mdui.snackbar({
+				message: "查询成功",
+				position: "right-top",
+			});
+      var result = {};
+      for (let i = 0; i < data.logs.length; i++) {
+        var affair = data.logs[i][1];
+        if (result[affair] == undefined) {
+          result[affair] = 0;
+        }
+        result[affair]++;
+      }
+      var result_list = Object.entries(result);
+      result_list.sort(function(a, b) {
+        return b[1] - a[1];
+      });
+      for(let i = 0; i < result_list.length; i++) {
+        result_list[i][1] *= 0.5; // 0.5 hour
+      }
+      var table_str = make_table(["Affair", "Hours"], result_list, true)
+			$("#statistic_table").html(table_str);
+			$("#statistic_table").removeClass("mdui-hidden");
+			mdui.mutation();
+		} else {
+			mdui.snackbar({
+				message: "查询失败\nstatus: " + data.status + "\nmsg: " + data.msg,
+				position: "right-top",
+			});
+			$("#statistic_table").addClass("mdui-hidden");
 		}
 	});
 }
