@@ -73,9 +73,6 @@ class User(db.Model, UserMixin):
 	username = sa.Column(sa.Unicode(16), nullable=False, comment='用户名')
 	password = sa.Column(sa.Unicode(32), nullable=False, comment='用户密码加盐哈希')
 
-	def __init__(self):
-		super().__init__()
-
 	def __repr__(self):
 		return f'<User {self.user_id} {self.username}>'
 	
