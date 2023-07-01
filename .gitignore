@@ -3,3 +3,5 @@ static/jq
 
 __pycache__
 temp/
+
+.python-version
